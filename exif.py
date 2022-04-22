@@ -1,3 +1,5 @@
+from exif import Image
+
 class Exif():
     def __init__(self):
         self.relevant_info = ['make','model','software','datetime','gps_longitude','gps_longitude_ref', 'gps_latitude','gps_latitude_ref']
