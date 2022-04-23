@@ -1,20 +1,23 @@
+from exif import Image
+from PIL import Image as pilIMG
+
 class Exif():
     def __init__(self):
         self.relevant_info = ['make','model','software','datetime','gps_longitude','gps_longitude_ref', 'gps_latitude','gps_latitude_ref']
-        with open('cuboulder.jpg', 'rb') as image_file:
+        with open('IMG_0578.jpeg', 'rb') as image_file:
             self.my_image = Image(image_file)
         self.tags_found = [tag for tag in self.relevant_info if tag in self.my_image.list_all()]
     
     
     def device_make(self):
-        print("make - " + str(self.my_image.make))
-        
-    def device_model(self):
-        print("model - " + str(self.my_image.model))
-        
-    def device_software(self):
-        print("software - " + str(self.my_image.software))
-        
+        device_data = {
+            'make': self.my_image.make,
+            'model': self.my_image.model,
+            'software': self.my_image.software,
+        }
+        for k, v in device_data.items():
+            print(k +  " - " + str(v))
+            
     def image_datetime(self):
         print("datetime - " + str(self.my_image.datetime))
 
@@ -22,13 +25,13 @@ class Exif():
         lat = 1
         long = 1
         gps_data = {
-            'gps_latitude': self.my_image.gps_latitude,
-            'gps_latitude_ref': self.my_image.gps_latitude_ref,
-            'gps_longitude': self.my_image.gps_longitude,
-            'gps_longitude_ref': self.my_image.gps_longitude_ref,
+            'Latitude': self.my_image.gps_latitude,
+            'Latitude Direction': self.my_image.gps_latitude_ref,
+            'Longitude': self.my_image.gps_longitude,
+            'Longitude Direction': self.my_image.gps_longitude_ref,
         }
         for k, v in gps_data.items():
-            print(k, v)
+            print(k +  " - " + str(v))
 
         if self.my_image.gps_latitude_ref == 'S':
             lat = -1
@@ -46,12 +49,9 @@ class Exif():
         if self.tags_found:
             print("Relevant exif data was found in this image\n")
             image_exifdata = self.my_image.list_all()
-            if 'make' in image_exifdata:
+            print(image_exifdata)
+            if 'make' or 'model' or 'software' in image_exifdata:
                 self.device_make()
-            if 'model' in image_exifdata:
-                self.device_model()
-            if 'software' in image_exifdata:
-                self.device_software()
             if 'datetime' in image_exifdata:
                 self.image_datetime()
             if 'gps_latitude' in image_exifdata:
@@ -59,8 +59,12 @@ class Exif():
         else:
             print("No relevant exif data found in this image")
             
-    def deleteExif(self, delete_list):
-        if embedded_exif:
-            for i in range(len(delete_list)):
-                if (delete_list[i] in self.relevant_info) and (self.relevant_info[i] in self.my_image):
-                    pass
+    def deleteExif(self):
+        if self.my_image.has_exif:
+            data = self.my_image.list_all()
+            print(data)
+            for tag in data:
+                del self.my_image[tag]
+            with open('IMG-noexif.jpg', 'wb') as new_image_file:
+                new_image_file.write(self.my_image.get_file())
+            
