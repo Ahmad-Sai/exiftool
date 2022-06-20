@@ -68,3 +68,7 @@ class Exif():
             with open('IMG-noexif.jpg', 'wb') as new_image_file:
                 new_image_file.write(self.my_image.get_file())
             
+
+exif = Exif()
+exif.extractExif()
+exif.deleteExif()
