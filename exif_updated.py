@@ -1,12 +1,10 @@
-# this script currently works for Jpeg, jpg, png
-
 from exif import Image
 from PIL import Image as pilIMG
 
 class Exif():
     def __init__(self):
         self.relevant_info = ['make','model','software','datetime','gps_longitude','gps_longitude_ref', 'gps_latitude','gps_latitude_ref']
-        with open('IMG-noexif.jpg', 'rb') as image_file:
+        with open('bigman.jpg', 'rb') as image_file:
             self.my_image = Image(image_file)
         self.tags_found = [tag for tag in self.relevant_info if tag in self.my_image.list_all()]
         print(self.tags_found)
@@ -14,12 +12,17 @@ class Exif():
     
     def device_make(self):
         # retrievs make, model, and software tags embedded in image. Falls back silently if 1 or all of the tags are not found
+        device_data = {}
+        try:
+            device_data['make'] = self.my_image.make
+        except:
+            pass
+        try:
+            device_data['model'] = self.my_image.model
+        except:
+            pass
         try: 
-            device_data = {
-                'make': self.my_image.make,
-                'model': self.my_image.model,
-                'software': self.my_image.software,
-            }
+            device_data['software'] = self.my_image.software
         except:
             pass
         
@@ -83,7 +86,7 @@ class Exif():
                 del self.my_image[tag]
             with open('IMG-noexif.jpg', 'wb') as new_image_file:
                 new_image_file.write(self.my_image.get_file())
-            
+                
 
 # instantiate class object and perform extraction
 exif = Exif()
